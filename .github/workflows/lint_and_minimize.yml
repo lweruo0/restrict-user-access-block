@@ -1,0 +1,90 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+jobs:
+  lint_php:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: PHP Syntax Check
+        run: find . -name '*.php' -not -path './vendor/*' -not -path './stubs/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
+
+  minimize_js_css:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install -g terser postcss-cli cssnano stylelint stylelint-config-standard eslint
+
+      - name: Lint JS
+        run: eslint "**/*.js" --ignore-pattern "**/*.min.js" --ignore-pattern "**/*patched.css"
+
+      - name: Minimize JS
+        run: |
+          js_files=(
+            "assets/js/admin.js"
+            "assets/js/frontend.js"
+            "assets/js/settings.js"
+          )
+          for file in "${js_files[@]}"; do
+            out="${file%.js}.min.js"
+            if [ -s "./$file" ]; then
+              terser "./$file" -o "./$out" --compress --mangle
+            else
+              cp "./$file" "./$out"
+            fi
+          done
+
+      - name: Lint CSS
+        run: npx stylelint "**/*.css" "!**/*.min.css" "!**/*patched.css"
+
+      - name: Minimize CSS
+        run: |
+          css_files=(
+            "assets/css/admin.css"
+            "assets/css/frontend.css"
+          )
+          for file in "${css_files[@]}"; do
+            out="${file%.css}.min.css"
+            if [ -s "./$file" ]; then
+              postcss "./$file" --use cssnano -o "./$out"
+            else
+              cp "./$file" "./$out"
+            fi
+          done
+
+      - name: Commit and push minimized files
+        run: |
+          git config --global user.email noreply@github.com
+          git config --global user.name "github-actions[bot]"
+          git add ./assets/css/admin.min.css
+          git add ./assets/css/frontend.min.css
+          git add ./assets/js/admin.min.js
+          git add ./assets/js/frontend.min.js
+          git add ./assets/js/settings.min.js
+          git commit -m "committing minimized css/js" || true
+          git push origin HEAD:${{ github.ref_name }} || true
+
+

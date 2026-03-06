@@ -1,0 +1,26 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+ // add styles for image removal button
+ 
+ .rua-locked-symboldiv {
+	padding: 0;
+
+ 	.rua-locked-symbol {
+	
+	z-index: 2;
+	//top: 20px;
+	//right: 20px;
+	background: #ff0;
+	color: #b93535;
+	border: 2px solid #b93535;
+	cursor: pointer;
+	border-radius: 4px;
+
+	 }
+	 
+
+}	 
