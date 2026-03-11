@@ -274,9 +274,10 @@ add_filter('block_editor_settings_all', 'restrict_user_access_block_settings', 1
 
 function check_access($atts)
 {
+    $user = null;
     if (function_exists('rua_get_user')) {
         $user = rua_get_user();
-        if ($user->has_global_access()) {
+        if ($user && $user->has_global_access()) {
             return true;
         }
     }
@@ -293,7 +294,7 @@ function check_access($atts)
     }
     $legacy_app = \RUA_App::instance();
 
-    if ($a['level'] !== '') {
+    if ($a['level'] !== '' && $user) {
         $has_negation = strpos($a['level'], '!') !== false;
         $user_levels = array_flip($user->get_level_ids());
         if (!empty($user_levels) || $has_negation) {
@@ -355,9 +356,9 @@ function check_access($atts)
         }
     }
 
+    // $user may be null if rua_get_user() is unavailable
     /**
      * @var bool $has_access
-     * @var \RUA_User_Interface $user
      * @var array $a
      */
     $has_access = apply_filters('rua/shortcode/restrict', $has_access, $user, $a);
