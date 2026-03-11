@@ -136,7 +136,7 @@ function update_rua_levels(): array
                     rua_get_user($user)->remove_level($gast_level); /* remove */
                     rua_get_user($user)->remove_level($tagesgast_level); /* remove */
                     rua_get_user($user)->add_level($mitglied_level);
-                
+
                     $mitgliedschaft = strtolower(get_user_meta($user->ID, $key = 'Mitgliedschaft', true));
                     switch ($mitgliedschaft) {
                         case "aktiv":
