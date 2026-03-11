@@ -37,11 +37,11 @@ function update_rua_levels(): array
 {
     $returnvalue = [];
     if (class_exists('RUA_App')) {
-        $rua_app = RUA_App::instance();
-        $all_levels = RUA_App::instance()->get_levels();
+        $rua_app = \RUA_App::instance();
+        $all_levels = $rua_app->get_levels();
         $active_levels_by_name = [];
         foreach ($all_levels as $id => $level) {
-            if ($level->post_status == RUA_App::STATUS_ACTIVE) {
+            if ($level->post_status == \RUA_App::STATUS_ACTIVE) {
                 $active_levels_by_name[$level->post_name] = $id;
             }
         }
@@ -79,18 +79,20 @@ function update_rua_levels(): array
         $user_query_results = $user_query->get_results();
         error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
-            foreach ($user_query_results as $user) {
-                rua_get_user($user)->add_level($logged_in_level);
-                rua_get_user($user)->add_level($gast_level);
-                rua_get_user($user)->add_level($tagesgast_level);
-                rua_get_user($user)->add_level($mitglied_level);
-                rua_get_user($user)->add_level($aktiv_level);
-                rua_get_user($user)->add_level($passiv_level);
-                rua_get_user($user)->add_level($jugend_level);
-                rua_get_user($user)->add_level($jugend_leiter_level);
-                rua_get_user($user)->add_level($foerder_level);
-                rua_get_user($user)->add_level($vorstandschaft_level);
-                rua_get_user($user)->add_level($admin_level);
+            if (function_exists('rua_get_user')) {
+                foreach ($user_query_results as $user) {
+                    rua_get_user($user)->add_level($logged_in_level);
+                    rua_get_user($user)->add_level($gast_level);
+                    rua_get_user($user)->add_level($tagesgast_level);
+                    rua_get_user($user)->add_level($mitglied_level);
+                    rua_get_user($user)->add_level($aktiv_level);
+                    rua_get_user($user)->add_level($passiv_level);
+                    rua_get_user($user)->add_level($jugend_level);
+                    rua_get_user($user)->add_level($jugend_leiter_level);
+                    rua_get_user($user)->add_level($foerder_level);
+                    rua_get_user($user)->add_level($vorstandschaft_level);
+                    rua_get_user($user)->add_level($admin_level);
+                }
             }
         }
 
@@ -103,17 +105,19 @@ function update_rua_levels(): array
         $user_query_results = $user_query->get_results();
         error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
-            foreach ($user_query_results as $user) {
-                rua_get_user($user)->add_level($logged_in_level);
-                rua_get_user($user)->remove_level($gast_level); /* remove */
-                rua_get_user($user)->remove_level($tagesgast_level); /* remove */
-                rua_get_user($user)->add_level($mitglied_level);
-                rua_get_user($user)->add_level($aktiv_level);
-                rua_get_user($user)->remove_level($passiv_level); /* remove */
-                rua_get_user($user)->remove_level($jugend_level); /* remove */
-                rua_get_user($user)->remove_level($foerder_level); /* remove */
-                rua_get_user($user)->add_level($vorstandschaft_level);
-                rua_get_user($user)->remove_level($admin_level); /* remove */
+            if (function_exists('rua_get_user')) {
+                foreach ($user_query_results as $user) {
+                    rua_get_user($user)->add_level($logged_in_level);
+                    rua_get_user($user)->remove_level($gast_level); /* remove */
+                    rua_get_user($user)->remove_level($tagesgast_level); /* remove */
+                    rua_get_user($user)->add_level($mitglied_level);
+                    rua_get_user($user)->add_level($aktiv_level);
+                    rua_get_user($user)->remove_level($passiv_level); /* remove */
+                    rua_get_user($user)->remove_level($jugend_level); /* remove */
+                    rua_get_user($user)->remove_level($foerder_level); /* remove */
+                    rua_get_user($user)->add_level($vorstandschaft_level);
+                    rua_get_user($user)->remove_level($admin_level); /* remove */
+                }
             }
         }
 
@@ -127,45 +131,48 @@ function update_rua_levels(): array
         error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
-                rua_get_user($user)->add_level($logged_in_level);
-                rua_get_user($user)->remove_level($gast_level); /* remove */
-                rua_get_user($user)->remove_level($tagesgast_level); /* remove */
-                rua_get_user($user)->add_level($mitglied_level);
-                $mitgliedschaft = strtolower(get_user_meta($user->ID, $key = 'Mitgliedschaft', true));
-                switch ($mitgliedschaft) {
-                    case "aktiv":
-                    case "ehrenmitglied":
-                        rua_get_user($user)->add_level($aktiv_level);
-                        rua_get_user($user)->remove_level($passiv_level); /* remove */
-                        rua_get_user($user)->remove_level($jugend_level); /* remove */
-                        rua_get_user($user)->remove_level($foerder_level); /* remove */
-                        break;
-                    case "passiv":
-                        rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                        rua_get_user($user)->add_level($passiv_level);
-                        rua_get_user($user)->remove_level($jugend_level); /* remove */
-                        rua_get_user($user)->remove_level($foerder_level); /* remove */
-                        break;
-                    case "jugend":
-                        rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                        rua_get_user($user)->remove_level($passiv_level); /* remove */
-                        rua_get_user($user)->add_level($jugend_level);
-                        rua_get_user($user)->remove_level($foerder_level); /* remove */
-                        break;
-                    case "förder":
-                        rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                        rua_get_user($user)->remove_level($passiv_level); /* remove */
-                        rua_get_user($user)->remove_level($jugend_level); /* remove */
-                        rua_get_user($user)->add_level($foerder_level);
-                        break;
-                    default:
-                        rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                        rua_get_user($user)->remove_level($passiv_level); /* remove */
-                        rua_get_user($user)->remove_level($jugend_level); /* remove */
-                        rua_get_user($user)->remove_level($foerder_level); /* remove */
+                if (function_exists('rua_get_user')) {
+                    rua_get_user($user)->add_level($logged_in_level);
+                    rua_get_user($user)->remove_level($gast_level); /* remove */
+                    rua_get_user($user)->remove_level($tagesgast_level); /* remove */
+                    rua_get_user($user)->add_level($mitglied_level);
+                
+                    $mitgliedschaft = strtolower(get_user_meta($user->ID, $key = 'Mitgliedschaft', true));
+                    switch ($mitgliedschaft) {
+                        case "aktiv":
+                        case "ehrenmitglied":
+                            rua_get_user($user)->add_level($aktiv_level);
+                            rua_get_user($user)->remove_level($passiv_level); /* remove */
+                            rua_get_user($user)->remove_level($jugend_level); /* remove */
+                            rua_get_user($user)->remove_level($foerder_level); /* remove */
+                            break;
+                        case "passiv":
+                            rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                            rua_get_user($user)->add_level($passiv_level);
+                            rua_get_user($user)->remove_level($jugend_level); /* remove */
+                            rua_get_user($user)->remove_level($foerder_level); /* remove */
+                            break;
+                        case "jugend":
+                            rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                            rua_get_user($user)->remove_level($passiv_level); /* remove */
+                            rua_get_user($user)->add_level($jugend_level);
+                            rua_get_user($user)->remove_level($foerder_level); /* remove */
+                            break;
+                        case "förder":
+                            rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                            rua_get_user($user)->remove_level($passiv_level); /* remove */
+                            rua_get_user($user)->remove_level($jugend_level); /* remove */
+                            rua_get_user($user)->add_level($foerder_level);
+                            break;
+                        default:
+                            rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                            rua_get_user($user)->remove_level($passiv_level); /* remove */
+                            rua_get_user($user)->remove_level($jugend_level); /* remove */
+                            rua_get_user($user)->remove_level($foerder_level); /* remove */
+                    }
+                    rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
+                    rua_get_user($user)->remove_level($admin_level); /* remove */
                 }
-                rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
-                rua_get_user($user)->remove_level($admin_level); /* remove */
             }
         }
 
@@ -178,16 +185,18 @@ function update_rua_levels(): array
         $user_query_results = $user_query->get_results();
         error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
-            foreach ($user_query_results as $user) {
-                rua_get_user($user)->add_level($logged_in_level);
-                rua_get_user($user)->add_level($gast_level);
-                rua_get_user($user)->remove_level($tagesgast_level); /* remove */
-                rua_get_user($user)->remove_level($mitglied_level); /* remove */
-                rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                rua_get_user($user)->remove_level($passiv_level); /* remove */
-                rua_get_user($user)->remove_level($jugend_level); /* remove */
-                rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
-                rua_get_user($user)->remove_level($admin_level); /* remove */
+            if (function_exists('rua_get_user')) {
+                foreach ($user_query_results as $user) {
+                    rua_get_user($user)->add_level($logged_in_level);
+                    rua_get_user($user)->add_level($gast_level);
+                    rua_get_user($user)->remove_level($tagesgast_level); /* remove */
+                    rua_get_user($user)->remove_level($mitglied_level); /* remove */
+                    rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                    rua_get_user($user)->remove_level($passiv_level); /* remove */
+                    rua_get_user($user)->remove_level($jugend_level); /* remove */
+                    rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
+                    rua_get_user($user)->remove_level($admin_level); /* remove */
+                }
             }
         }
 
@@ -200,16 +209,18 @@ function update_rua_levels(): array
         $user_query_results = $user_query->get_results();
         error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
-            foreach ($user_query_results as $user) {
-                rua_get_user($user)->add_level($logged_in_level);
-                rua_get_user($user)->remove_level($gast_level); /* remove */
-                rua_get_user($user)->add_level($tagesgast_level);
-                rua_get_user($user)->remove_level($mitglied_level); /* remove */
-                rua_get_user($user)->remove_level($aktiv_level); /* remove */
-                rua_get_user($user)->remove_level($passiv_level); /* remove */
-                rua_get_user($user)->remove_level($jugend_level); /* remove */
-                rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
-                rua_get_user($user)->remove_level($admin_level); /* remove */
+            if (function_exists('rua_get_user')) {
+                foreach ($user_query_results as $user) {
+                    rua_get_user($user)->add_level($logged_in_level);
+                    rua_get_user($user)->remove_level($gast_level); /* remove */
+                    rua_get_user($user)->add_level($tagesgast_level);
+                    rua_get_user($user)->remove_level($mitglied_level); /* remove */
+                    rua_get_user($user)->remove_level($aktiv_level); /* remove */
+                    rua_get_user($user)->remove_level($passiv_level); /* remove */
+                    rua_get_user($user)->remove_level($jugend_level); /* remove */
+                    rua_get_user($user)->remove_level($vorstandschaft_level); /* remove */
+                    rua_get_user($user)->remove_level($admin_level); /* remove */
+                }
             }
         }
     }
@@ -242,16 +253,17 @@ add_shortcode('update_rua_levels', 'update_rua_levels_shortcode');
 function restrict_user_access_block_settings($editor_settings, $editor_context)
 {
     if (! empty($editor_context->post)) {
-
-        $rua_app = RUA_App::instance();
-        $all_levels = RUA_App::instance()->get_levels();
-        $active_levels_by_name = [];
-        foreach ($all_levels as $id => $level) {
-            if ($level->post_status == RUA_App::STATUS_ACTIVE) {
-                $active_levels_by_name[$level->post_name] = $id;
+        if (class_exists('RUA_App')) {
+            $rua_app = \RUA_App::instance();
+            $all_levels = $rua_app->get_levels();
+            $active_levels_by_name = [];
+            foreach ($all_levels as $id => $level) {
+                if ($level->post_status == RUA_App::STATUS_ACTIVE) {
+                    $active_levels_by_name[$level->post_name] = $id;
+                }
             }
+            $editor_settings['active_rua_levels'] = $active_levels_by_name;
         }
-        $editor_settings['active_rua_levels'] = $active_levels_by_name;
     }
     return $editor_settings;
 }
@@ -259,94 +271,6 @@ add_filter('block_editor_settings_all', 'restrict_user_access_block_settings', 1
 
 
 
-
-
-
-
-
-
-
-
-
-
-function check_access_full($atts, $content = null)
-{
-    $user = rua_get_user();
-    if ($user->has_global_access()) {
-        return do_shortcode($content);
-    }
-
-    $a = shortcode_atts([
-        'role'      => '',
-        'level'     => '',
-        'page'      => 0,
-        'drip_days' => 0,
-    ], $atts, 'restrict');
-
-    $has_access = false;
-    $legacy_app = \RUA_App::instance();
-
-    if ($a['level'] !== '') {
-        $has_negation = strpos($a['level'], '!') !== false;
-        $user_levels = array_flip($user->get_level_ids());
-        if (!empty($user_levels) || $has_negation) {
-            $level_names = explode(',', str_replace(' ', '', $a['level']));
-            $not_found = 0;
-            foreach ($level_names as $level_name) {
-                $level = $legacy_app->level_manager->get_level_by_name(ltrim($level_name, '!'));
-                if (!$level) {
-                    $not_found++;
-                    continue;
-                }
-                //if level param is negated, give access only if user does not have it
-                if ($level->post_name != $level_name) {
-                    $has_access = !isset($user_levels[$level->ID]);
-                } elseif (isset($user_levels[$level->ID])) {
-                    $drip = (int) $a['drip_days'];
-                    if ($drip > 0 && $user->has_level($level->ID)) {
-                        //@todo if extended level drips content, use start date
-                        //of level user is member of
-                        $start = $user->level_memberships()->get($level->ID)->get_start();
-                        if ($start > 0) {
-                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
-                            $should_drip = apply_filters(
-                                'rua/auth/content-drip',
-                                time() <= $drip_time,
-                                $user,
-                                $level->ID,
-                            );
-                            if ($should_drip) {
-                                continue;
-                            }
-                        }
-                    }
-                    $has_access = true;
-                }
-                if ($has_access) {
-                    break;
-                }
-            }
-            //if levels do not exist, make content visible
-            if (!$has_access && $not_found && $not_found === count($level_names)) {
-                $has_access = true;
-            }
-        }
-    } elseif ($a['role'] !== '') {
-        $user_roles = array_flip(wp_get_current_user()->roles);
-        if (!empty($user_roles)) {
-            $roles = explode(',', str_replace(' ', '', $a['role']));
-            foreach ($roles as $role_name) {
-                $role = ltrim($role_name, '!');
-                $not = $role != $role_name;
-                //when role is negated, give access if user does not have it
-                //otherwise give access only if user has it
-                if ($not xor isset($user_roles[$role])) {
-                    $has_access = true;
-                    break;
-                }
-            }
-        }
-    }
 
     /**
      * @var bool $has_access
@@ -373,11 +297,12 @@ function check_access_full($atts, $content = null)
 
 function check_access($atts)
 {
-    $user = rua_get_user();
-    if ($user->has_global_access()) {
-        return true;
+    if (function_exists('rua_get_user')) {
+        $user = rua_get_user();
+        if ($user->has_global_access()) {
+            return true;
+        }
     }
-
     $a = shortcode_atts([
         'role'      => '',
         'level'     => '',
@@ -386,6 +311,9 @@ function check_access($atts)
     ], $atts, 'restrict');
 
     $has_access = false;
+    if (!class_exists('RUA_App')) {
+        return true;
+    }
     $legacy_app = \RUA_App::instance();
 
     if ($a['level'] !== '') {
@@ -487,19 +415,21 @@ function restrict_user_access_block_render_block_filter($block_content, $block)
         $levelArray = [];
     }
     // only check if levels are given
-    if (! empty($levelArray)) {
-        $rua_app = RUA_App::instance();
-        foreach ($levelArray as $level) {
-            $atts = [
-                "level" => $level,
-            ];
-            // we call the given shortcodefunction to check
-            $has_access = check_access($atts);
-            if ($has_access) {
-                return $block_content;
+    if (class_exists('RUA_App')) {
+        if (! empty($levelArray)) {
+            $rua_app = \RUA_App::instance();
+            foreach ($levelArray as $level) {
+                $atts = [
+                    "level" => $level,
+                ];
+                // we call the given shortcodefunction to check
+                $has_access = check_access($atts);
+                if ($has_access) {
+                    return $block_content;
+                }
             }
+            return "";
         }
-        return "";
     }
     return $block_content;
 }
