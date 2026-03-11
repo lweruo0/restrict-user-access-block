@@ -26,7 +26,6 @@ pnpm-lock.yaml
 .yarn/
 .pnp.*
 dist/
-build/
 .cache/
 .parcel-cache/
 .next/
