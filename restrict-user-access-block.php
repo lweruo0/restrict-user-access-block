@@ -272,29 +272,6 @@ add_filter('block_editor_settings_all', 'restrict_user_access_block_settings', 1
 
 
 
-    /**
-     * @var bool $has_access
-     * @var \RUA_User_Interface $user
-     * @var array $a
-     */
-    $has_access = apply_filters('rua/shortcode/restrict', $has_access, $user, $a);
-
-    if (!$has_access) {
-        $content = '';
-
-        // Only apply the page content if it exists
-        $page = $a['page'] ? get_post($a['page']) : null;
-        if ($page) {
-            setup_postdata($page);
-            $content = get_the_content();
-            wp_reset_postdata();
-        }
-    }
-
-    return do_shortcode($content);
-}
-
-
 function check_access($atts)
 {
     if (function_exists('rua_get_user')) {
