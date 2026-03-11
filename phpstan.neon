@@ -5,7 +5,6 @@ parameters:
         - restrict-user-access-block.php
         - index.php
         - uninstall.php
-        - includes/
     scanDirectories:
         - vendor/tecnickcom/tcpdf
     scanFiles:
