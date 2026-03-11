@@ -1,6 +1,6 @@
 {
-	"name": "lweruo0/bfv-erlaubnisscheine",
-	"description": "Erlaubnisscheine auf der HP",
+	"name": "lweruo0/bfv-arbeitsdienst",
+	"description": "PDF-Erstellung für Arbeitsdienstlisten BFV-Ehingen",
 	"type": "wordpress-plugin",
 	"require-dev": {
 		"phpstan/phpstan": "^2.0",
