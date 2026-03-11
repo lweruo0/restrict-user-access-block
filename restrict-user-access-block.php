@@ -35,11 +35,11 @@ add_action('init', 'restrict_user_access_block_init');
  */
 function update_rua_levels(): array
 {
-    $returnvalue = array();
+    $returnvalue = [];
     if (class_exists('RUA_App')) {
         $rua_app = RUA_App::instance();
         $all_levels = RUA_App::instance()->get_levels();
-        $active_levels_by_name = array();
+        $active_levels_by_name = [];
         foreach ($all_levels as $id => $level) {
             if ($level->post_status == RUA_App::STATUS_ACTIVE) {
                 $active_levels_by_name[$level->post_name] = $id;
@@ -73,11 +73,11 @@ function update_rua_levels(): array
         /*
          * Administrator levels
          */
-        $user_query = new WP_User_Query(array(
-            'role' => 'administrator'
-        ));
+        $user_query = new WP_User_Query([
+            'role' => 'administrator',
+        ]);
         $user_query_results = $user_query->get_results();
-        error_log(print_r(count($user_query_results), TRUE));
+        error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
                 rua_get_user($user)->add_level($logged_in_level);
@@ -97,11 +97,11 @@ function update_rua_levels(): array
         /*
          * Vorstandschaft levels
          */
-        $user_query = new WP_User_Query(array(
-            'role' => 'editor'
-        ));
+        $user_query = new WP_User_Query([
+            'role' => 'editor',
+        ]);
         $user_query_results = $user_query->get_results();
-        error_log(print_r(count($user_query_results), TRUE));
+        error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
                 rua_get_user($user)->add_level($logged_in_level);
@@ -120,11 +120,11 @@ function update_rua_levels(): array
         /*
          * Mitglied levels
          */
-        $user_query = new WP_User_Query(array(
-            'role' => 'subscriber'
-        ));
+        $user_query = new WP_User_Query([
+            'role' => 'subscriber',
+        ]);
         $user_query_results = $user_query->get_results();
-        error_log(print_r(count($user_query_results), TRUE));
+        error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
                 rua_get_user($user)->add_level($logged_in_level);
@@ -172,11 +172,11 @@ function update_rua_levels(): array
         /*
          * Gast levels
          */
-        $user_query = new WP_User_Query(array(
-            'role' => 'gast'
-        ));
+        $user_query = new WP_User_Query([
+            'role' => 'gast',
+        ]);
         $user_query_results = $user_query->get_results();
-        error_log(print_r(count($user_query_results), TRUE));
+        error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
                 rua_get_user($user)->add_level($logged_in_level);
@@ -194,11 +194,11 @@ function update_rua_levels(): array
         /*
          * Tagesgast levels
          */
-        $user_query = new WP_User_Query(array(
-            'role' => 'tagesgast'
-        ));
+        $user_query = new WP_User_Query([
+            'role' => 'tagesgast',
+        ]);
         $user_query_results = $user_query->get_results();
-        error_log(print_r(count($user_query_results), TRUE));
+        error_log(print_r(count($user_query_results), true));
         if (! empty($user_query_results)) {
             foreach ($user_query_results as $user) {
                 rua_get_user($user)->add_level($logged_in_level);
@@ -239,12 +239,13 @@ add_shortcode('update_rua_levels', 'update_rua_levels_shortcode');
  * traegt in die Block settings die verfuegbaren aktiven rua levels ein.
  *
  */
-function restrict_user_access_block_settings( $editor_settings, $editor_context ) {
-    if ( ! empty( $editor_context->post ) ) {
+function restrict_user_access_block_settings($editor_settings, $editor_context)
+{
+    if (! empty($editor_context->post)) {
 
         $rua_app = RUA_App::instance();
         $all_levels = RUA_App::instance()->get_levels();
-        $active_levels_by_name = array();
+        $active_levels_by_name = [];
         foreach ($all_levels as $id => $level) {
             if ($level->post_status == RUA_App::STATUS_ACTIVE) {
                 $active_levels_by_name[$level->post_name] = $id;
@@ -254,7 +255,7 @@ function restrict_user_access_block_settings( $editor_settings, $editor_context 
     }
     return $editor_settings;
 }
-add_filter( 'block_editor_settings_all', 'restrict_user_access_block_settings', 10, 2 );
+add_filter('block_editor_settings_all', 'restrict_user_access_block_settings', 10, 2);
 
 
 
@@ -279,7 +280,7 @@ function check_access_full($atts, $content = null)
         'role'      => '',
         'level'     => '',
         'page'      => 0,
-        'drip_days' => 0
+        'drip_days' => 0,
     ], $atts, 'restrict');
 
     $has_access = false;
@@ -301,18 +302,18 @@ function check_access_full($atts, $content = null)
                 if ($level->post_name != $level_name) {
                     $has_access = !isset($user_levels[$level->ID]);
                 } elseif (isset($user_levels[$level->ID])) {
-                    $drip = (int)$a['drip_days'];
+                    $drip = (int) $a['drip_days'];
                     if ($drip > 0 && $user->has_level($level->ID)) {
                         //@todo if extended level drips content, use start date
                         //of level user is member of
                         $start = $user->level_memberships()->get($level->ID)->get_start();
                         if ($start > 0) {
-                            $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                             $should_drip = apply_filters(
                                 'rua/auth/content-drip',
                                 time() <= $drip_time,
                                 $user,
-                                $level->ID
+                                $level->ID,
                             );
                             if ($should_drip) {
                                 continue;
@@ -381,7 +382,7 @@ function check_access($atts)
         'role'      => '',
         'level'     => '',
         'page'      => 0,
-        'drip_days' => 0
+        'drip_days' => 0,
     ], $atts, 'restrict');
 
     $has_access = false;
@@ -403,18 +404,18 @@ function check_access($atts)
                 if ($level->post_name != $level_name) {
                     $has_access = !isset($user_levels[$level->ID]);
                 } elseif (isset($user_levels[$level->ID])) {
-                    $drip = (int)$a['drip_days'];
+                    $drip = (int) $a['drip_days'];
                     if ($drip > 0 && $user->has_level($level->ID)) {
                         //@todo if extended level drips content, use start date
                         //of level user is member of
                         $start = $user->level_memberships()->get($level->ID)->get_start();
                         if ($start > 0) {
-                            $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                             $should_drip = apply_filters(
                                 'rua/auth/content-drip',
                                 time() <= $drip_time,
                                 $user,
-                                $level->ID
+                                $level->ID,
                             );
                             if ($should_drip) {
                                 continue;
@@ -456,7 +457,7 @@ function check_access($atts)
      */
     $has_access = apply_filters('rua/shortcode/restrict', $has_access, $user, $a);
 
-	return $has_access;
+    return $has_access;
 }
 
 
@@ -483,20 +484,20 @@ function restrict_user_access_block_render_block_filter($block_content, $block)
     if (isset($block['attrs']) && isset($block['attrs']['ruaLevelsBlock2'])) {
         $levelArray = $block['attrs']['ruaLevelsBlock2'];
     } else {
-        $levelArray = array();
+        $levelArray = [];
     }
     // only check if levels are given
     if (! empty($levelArray)) {
         $rua_app = RUA_App::instance();
         foreach ($levelArray as $level) {
-            $atts = array(
-                "level" => $level
-            );
+            $atts = [
+                "level" => $level,
+            ];
             // we call the given shortcodefunction to check
-			$has_access = check_access($atts);
-			if ($has_access) {
-			    return $block_content;
-			}
+            $has_access = check_access($atts);
+            if ($has_access) {
+                return $block_content;
+            }
         }
         return "";
     }
