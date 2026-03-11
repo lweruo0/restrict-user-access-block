@@ -26,6 +26,3 @@ jobs:
 
   npm-run-build:
     uses: lweruo0/workflows/.github/workflows/npm-run-build.yml@main
-
-  js-css-minimize:
-    uses: lweruo0/workflows/.github/workflows/js_css_minimize.yml@main
