@@ -1,5 +1,5 @@
 name: Metaworkflow
-run-name: "🚀 Metaworkflow (${{ github.actor }} auf ${{ github.ref_name }})"
+run-name: "🚀 Metaworkflow (${{ github.actor }} auf  ${{ github.repository }}@${{ github.ref_name }})"
 
 on:
   workflow_dispatch:  # Ermoeglicht manuelles Triggern
